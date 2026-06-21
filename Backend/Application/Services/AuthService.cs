@@ -1,4 +1,5 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 using System;
@@ -22,13 +23,20 @@ namespace Application.Services
             _jwt = jwt;
         }
 
-        public async Task<string> Register(RegisterDTO dto)
+        public async Task<Result<string>> Register(RegisterDTO dto)
         {
+            if (dto.Password != dto.ConfirmPassword)
+                return Result<string>.Fail("Passwords do not match");
+
+            var userExists = await _userRepository.GetByEmailAsync(dto.Email);
+            if (userExists != null)
+                return Result<string>.Fail("User already exists");
+
             var user = new User
             {
                 Id = Guid.NewGuid(),
                 Name = dto.Name,
-                Surename=dto.Surename,
+                Surename = dto.Surename,
                 Email = dto.Email,
                 Password = BCrypt.Net.BCrypt.HashPassword(dto.Password)
             };
@@ -36,22 +44,26 @@ namespace Application.Services
             await _userRepository.AddAsync(user);
             await _userRepository.SaveChangesAsync();
 
-            return _jwt.CreateToken(user);
+            var token = _jwt.CreateToken(user);
+
+            return Result<string>.Ok(token);
         }
 
-        public async Task<string?> Login(LoginDTO dto)
+        public async Task<Result<string>> Login(LoginDTO dto)
         {
             var user = await _userRepository.GetByEmailAsync(dto.Email);
 
             if (user == null)
-                return null;
+                return Result<string>.Fail("User doesn't exist");
 
             var valid = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password);
 
             if (!valid)
-                return null;
+                return Result<string>.Fail("Invalid credentials");
 
-            return _jwt.CreateToken(user);
+            var token = _jwt.CreateToken(user);
+
+            return Result<string>.Ok(token);
         }
     }
 }

@@ -15,8 +15,9 @@ namespace Application.DependencyInjection
 
             {
                 services.AddScoped<IAuthService, AuthService>();
+                services.AddScoped<IWorkoutService, WorkoutService>();
 
-                return services;
+            return services;
             }
         }
 

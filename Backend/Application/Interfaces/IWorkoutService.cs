@@ -1,5 +1,6 @@
 ﻿using Application.Common;
 using Application.DTOs;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,10 @@ using System.Threading.Tasks;
 
 namespace Application.Interfaces
 {
-    public interface IAuthService
+    public interface IWorkoutService
     {
-        Task<Result<string>> Register(RegisterDTO dto);
-        Task<Result<string>>Login(LoginDTO dto);
+        Task<Result<string>> CreateWorkout(CreateWorkoutDTO dto,Guid userId);
+        Task<Result<List<Workout>>> GetWorkoutsForUser(Guid userId);
+
     }
 }

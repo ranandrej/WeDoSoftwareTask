@@ -19,5 +19,6 @@ namespace Infrastructure.Persistance
         {
         }
         public DbSet<User> Users { get; set; }
+        public DbSet<Workout> Workouts { get; set; }
     }
 }

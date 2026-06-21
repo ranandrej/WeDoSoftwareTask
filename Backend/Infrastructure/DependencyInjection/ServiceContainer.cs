@@ -26,6 +26,7 @@ namespace Infrastructure.DependencyInjection
 
             // Kad god neko trazi interfejs,mapiraj na klasu i innstacira objekat te klase da bi moglo da se koristi.
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IWorkoutRepository, WorkoutRepository>();
             services.AddScoped<IJwtTokenService, JwtTokenService>();
             return services;
         }

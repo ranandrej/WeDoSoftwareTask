@@ -19,19 +19,26 @@ namespace API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDTO dto)
         {
-            var token = await _authService.Register(dto);
-            return Ok(new { token });
+            var response = await _authService.Register(dto);
+            if (!response.Success)
+            {
+                return BadRequest(response.Error);
+            }
+            return Ok(new { token= response.Data });
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO dto)
         {
-            var token = await _authService.Login(dto);
+            var response = await _authService.Login(dto);
 
-            if (token == null)
-                return Unauthorized("Invalid credentials");
+            if (!response.Success)
+            {
+               return Unauthorized(response.Error);
 
-            return Ok(token);
+            }
+
+            return Ok(new {token = response.Data});
         }
     }
 }
