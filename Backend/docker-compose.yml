@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: training-app-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass123
+      POSTGRES_DB: training-app
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d training-app"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: training-app-api
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=training-app;Username=postgres;Password=pass123"
+      Jwt__Issuer: TrainingApp
+      Jwt__Audience: TrainingAppUsers
+      Jwt__Key: DevelopmentSecretKey123456789_thiskeyissuperstrongthatitcantbebypassedforgood
+
+volumes:
+  postgres_data:

@@ -7,7 +7,16 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 // Add services to the container.
 builder.Services.InfrastructureServices(builder.Configuration);
 builder.Services.ApplicationServices();
@@ -72,6 +81,7 @@ builder.Services.AddAuthorization();
 
 
 var app = builder.Build();
+app.UseCors("AllowAngular");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -85,6 +95,12 @@ app.UseHttpsRedirection();
 //Midleware za auth
 app.UseAuthentication();
 app.UseAuthorization();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<TrainingAppDBContext>();
+    db.Database.Migrate();
+}
 
 app.MapControllers();
 

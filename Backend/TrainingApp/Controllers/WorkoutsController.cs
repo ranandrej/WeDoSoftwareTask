@@ -1,10 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
-using Application.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -19,41 +16,77 @@ namespace API.Controllers
             _workoutService = workoutService;
         }
 
-        [Authorize]
-        [HttpPost("create")]
-        public async Task<IActionResult> Create(CreateWorkoutDTO dto)
+        [HttpGet("types")]
+        public IActionResult GetTypes()
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (!Guid.TryParse(userIdClaim, out var userId))
-            {
-                return Unauthorized();
-            }
-            var response = await _workoutService.CreateWorkout(dto, userId);
-            if (!response.Success)
-            {
-                return BadRequest(response.Error);
-            }
+            var response = _workoutService.GetWorkoutTypes();
             return Ok(new { Message = response.Data });
         }
+
+        [Authorize]
+        [HttpGet("progress")]
+        public async Task<IActionResult> GetProgress([FromQuery] int year, [FromQuery] int month)
+        {
+            var response = await _workoutService.GetMonthlyProgress(User.GetUserId(), year, month);
+            if (!response.Success)
+                return BadRequest(response.Error);
+
+            return Ok(new { Message = response.Data });
+        }
+
         [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllForUser()
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (!Guid.TryParse(userIdClaim, out var userId))
-            {
-                return Unauthorized();
-            }
-            var response = await _workoutService.GetWorkoutsForUser(userId);
+            var response = await _workoutService.GetWorkoutsForUser(User.GetUserId());
             if (!response.Success)
-            {
                 return BadRequest(response.Error);
-            }
+
             return Ok(new { Message = response.Data });
         }
 
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var response = await _workoutService.GetWorkoutById(id, User.GetUserId());
+            if (!response.Success)
+                return NotFound(response.Error);
+
+            return Ok(new { Message = response.Data });
+        }
+
+        [Authorize]
+        [HttpPost("create")]
+        public async Task<IActionResult> Create(CreateWorkoutDTO dto)
+        {
+            var response = await _workoutService.CreateWorkout(dto, User.GetUserId());
+            if (!response.Success)
+                return BadRequest(response.Error);
+
+            return Ok(new { Message = response.Data });
+        }
+
+        [Authorize]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, UpdateWorkoutDTO dto)
+        {
+            var response = await _workoutService.UpdateWorkout(id, dto, User.GetUserId());
+            if (!response.Success)
+                return BadRequest(response.Error);
+
+            return Ok(new { Message = response.Data });
+        }
+
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var response = await _workoutService.DeleteWorkout(id, User.GetUserId());
+            if (!response.Success)
+                return NotFound(response.Error);
+
+            return Ok(new { Message = response.Data });
+        }
     }
 }
-

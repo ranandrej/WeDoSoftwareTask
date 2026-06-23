@@ -10,8 +10,11 @@ namespace Application.Interfaces
     public interface IWorkoutRepository
     {
         Task<Workout?> GetByID(Guid id);
-        Task<List<Workout>?> GetByUserID(Guid id);
-        Task AddAsync(Workout workoute);
+        Task<List<Workout>> GetByUserID(Guid id);
+        Task<List<Workout>> GetByUserIdAndMonthAsync(Guid userId, int year, int month);
+        Task AddAsync(Workout workout);
+        void Update(Workout workout);
+        void Delete(Workout workout);
         Task SaveChangesAsync();
     }
 }
