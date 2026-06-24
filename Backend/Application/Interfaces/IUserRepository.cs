@@ -12,6 +12,8 @@ namespace Application.Interfaces
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByIdAsync(Guid id);
         Task AddAsync(User user);
+        void Update(User user);
+        void Delete(User user);
         Task SaveChangesAsync();
     }
 }

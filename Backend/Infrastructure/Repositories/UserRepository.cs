@@ -33,6 +33,16 @@ namespace Infrastructure.Repositories
             await _context.Users.AddAsync(user);
         }
 
+        public void Update(User user)
+        {
+            _context.Users.Update(user);
+        }
+
+        public void Delete(User user)
+        {
+            _context.Users.Remove(user);
+        }
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

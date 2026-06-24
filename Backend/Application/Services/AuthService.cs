@@ -2,11 +2,6 @@
 using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
@@ -14,23 +9,27 @@ namespace Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IJwtTokenService _jwt;
+        private readonly AuthValidator _validator;
 
         public AuthService(
             IUserRepository userRepository,
-            IJwtTokenService jwt)
+            IJwtTokenService jwt,
+            AuthValidator validator)
         {
             _userRepository = userRepository;
             _jwt = jwt;
+            _validator = validator;
         }
 
         public async Task<Result<string>> Register(RegisterDTO dto)
         {
-            if (dto.Password != dto.ConfirmPassword)
-                return Result<string>.Fail("Passwords do not match");
+            var validationError = _validator.ValidateRegister(dto);
+            if (validationError != null)
+                return Result<string>.Fail(validationError);
 
             var userExists = await _userRepository.GetByEmailAsync(dto.Email);
             if (userExists != null)
-                return Result<string>.Fail("User already exists");
+                return Result<string>.Fail("User with same e-mail already exists");
 
             var user = new User
             {
@@ -51,6 +50,10 @@ namespace Application.Services
 
         public async Task<Result<string>> Login(LoginDTO dto)
         {
+            var validationError = _validator.ValidateLogin(dto);
+            if (validationError != null)
+                return Result<string>.Fail(validationError);
+
             var user = await _userRepository.GetByEmailAsync(dto.Email);
 
             if (user == null)

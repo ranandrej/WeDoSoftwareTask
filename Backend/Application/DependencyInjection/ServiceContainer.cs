@@ -18,6 +18,7 @@ namespace Application.DependencyInjection
                 services.AddScoped<IAuthService, AuthService>();
                 services.AddScoped<IUserService, UserService>();
                 services.AddScoped<IWorkoutService, WorkoutService>();
+                services.AddScoped<AuthValidator>();
                 services.AddScoped<WorkoutValidator>();
 
             return services;

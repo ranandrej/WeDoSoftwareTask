@@ -1,0 +1,74 @@
+<div class="min-h-[calc(100vh-56px)] bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex items-center justify-center px-4 py-12">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-8">
+      <p class="text-indigo-300 text-sm font-semibold tracking-widest uppercase mb-2">
+        WeDoSoftware Task
+      </p>
+      <h1 class="text-3xl font-bold text-white">Welcome back</h1>
+      <p class="mt-2 text-slate-400">Sign in to manage your workouts</p>
+    </div>
+
+    <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-8">
+      <form (ngSubmit)="login()" class="space-y-5">
+        <div>
+          <label for="email" class="block text-sm font-medium text-slate-200 mb-1.5">
+            Email
+          </label>
+          <input
+            id="email"
+            [(ngModel)]="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+            required
+            class="w-full rounded-lg border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white placeholder:text-slate-500 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 transition"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-slate-200 mb-1.5">
+            Password
+          </label>
+          <input
+            id="password"
+            [(ngModel)]="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            required
+            class="w-full rounded-lg border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white placeholder:text-slate-500 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 transition"
+          />
+        </div>
+
+        @if (errorMessage()) {
+          <div class="rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        @if (successMessage()) {
+          <div class="rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+            {{ successMessage() }}
+          </div>
+        }
+
+        <button
+          type="submit"
+          [disabled]="loading()"
+          class="w-full rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 disabled:cursor-not-allowed disabled:opacity-60 transition"
+        >
+          {{ loading() ? 'Signing in...' : 'Sign in' }}
+        </button>
+      </form>
+
+      <p class="mt-6 text-center text-sm text-slate-400">
+        Don't have an account?
+        <a routerLink="/register" class="text-indigo-300 hover:text-indigo-200 font-medium">
+          Register
+        </a>
+      </p>
+    </div>
+  </div>
+</div>

@@ -10,6 +10,8 @@ namespace Application.Interfaces
     public interface IUserService
     {
         Task<Result<GetUserDTO>> GetCurrentUser(Guid id);
+        Task<Result<string>> UpdateUser(Guid id, UpdateUserDTO dto);
+        Task<Result<string>> DeleteUser(Guid id);
     }
 }
 

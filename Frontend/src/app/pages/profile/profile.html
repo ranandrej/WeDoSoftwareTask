@@ -1,0 +1,207 @@
+<div class="min-h-[calc(100vh-56px)] bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 px-4 py-10 sm:py-12">
+  <div class="mx-auto w-full max-w-2xl">
+    <div class="mb-8 text-center sm:text-left">
+      <p class="mb-2 text-sm font-semibold uppercase tracking-widest text-indigo-300">
+        Account
+      </p>
+      <h1 class="text-3xl font-bold text-white">Profile</h1>
+      <p class="mt-2 text-slate-400">View and manage your personal information</p>
+    </div>
+
+    @if (pageLoading()) {
+      <div class="flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 py-20">
+        <p class="text-sm text-slate-300">Loading profile...</p>
+      </div>
+    } @else if (loadError()) {
+      <div class="rounded-2xl border border-red-400/30 bg-red-500/10 px-6 py-8 text-center text-sm text-red-200">
+        {{ loadError() }}
+      </div>
+    } @else {
+      <div class="space-y-6">
+        <div class="rounded-2xl border border-white/10 bg-white/10 p-6 shadow-2xl backdrop-blur-md sm:p-8">
+          <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 class="text-lg font-semibold text-white">Personal details</h2>
+              <p class="mt-1 text-sm text-slate-400">
+                @if (editMode()) {
+                  Edit your information and save when ready.
+                } @else {
+                  Your profile is locked. Click edit to make changes.
+                }
+              </p>
+            </div>
+
+            @if (!editMode()) {
+              <button
+                type="button"
+                (click)="startEdit()"
+                class="w-full rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400 transition sm:w-auto"
+              >
+                Edit profile
+              </button>
+            }
+          </div>
+
+          <form (ngSubmit)="saveProfile()" class="space-y-5">
+            <div class="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label for="name" class="mb-1.5 block text-sm font-medium text-slate-200">
+                  Name
+                </label>
+                <input
+                  id="name"
+                  [(ngModel)]="name"
+                  name="name"
+                  type="text"
+                  autocomplete="given-name"
+                  [disabled]="!editMode()"
+                  class="w-full rounded-lg border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white placeholder:text-slate-500 transition focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 disabled:cursor-not-allowed disabled:opacity-70"
+                />
+              </div>
+
+              <div>
+                <label for="surename" class="mb-1.5 block text-sm font-medium text-slate-200">
+                  Surname
+                </label>
+                <input
+                  id="surename"
+                  [(ngModel)]="surename"
+                  name="surename"
+                  type="text"
+                  autocomplete="family-name"
+                  [disabled]="!editMode()"
+                  class="w-full rounded-lg border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white placeholder:text-slate-500 transition focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 disabled:cursor-not-allowed disabled:opacity-70"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="email" class="mb-1.5 block text-sm font-medium text-slate-200">
+                Email
+              </label>
+              <input
+                id="email"
+                [(ngModel)]="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                [disabled]="!editMode()"
+                class="w-full rounded-lg border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white placeholder:text-slate-500 transition focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 disabled:cursor-not-allowed disabled:opacity-70"
+              />
+            </div>
+
+            @if (editMode()) {
+              <div class="rounded-xl border border-white/10 bg-slate-900/30 p-4">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-slate-200">Password</p>
+                    <p class="mt-1 text-xs text-slate-400">
+                      Leave locked unless you want to set a new password.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    (click)="togglePasswordEdit()"
+                    class="w-full rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-white/5 transition sm:w-auto"
+                  >
+                    {{ changePassword() ? 'Cancel password change' : 'Change password' }}
+                  </button>
+                </div>
+
+                @if (changePassword()) {
+                  <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label for="password" class="mb-1.5 block text-sm font-medium text-slate-200">
+                        New password
+                      </label>
+                      <input
+                        id="password"
+                        [(ngModel)]="password"
+                        name="password"
+                        type="password"
+                        autocomplete="new-password"
+                        placeholder="••••••••"
+                        class="w-full rounded-lg border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white placeholder:text-slate-500 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 transition"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        for="confirmPassword"
+                        class="mb-1.5 block text-sm font-medium text-slate-200"
+                      >
+                        Confirm new password
+                      </label>
+                      <input
+                        id="confirmPassword"
+                        [(ngModel)]="confirmPassword"
+                        name="confirmPassword"
+                        type="password"
+                        autocomplete="new-password"
+                        placeholder="••••••••"
+                        class="w-full rounded-lg border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white placeholder:text-slate-500 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 transition"
+                      />
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (errorMessage()) {
+              <div class="rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                {{ errorMessage() }}
+              </div>
+            }
+
+            @if (successMessage()) {
+              <div class="rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+                {{ successMessage() }}
+              </div>
+            }
+
+            @if (editMode()) {
+              <div class="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  (click)="cancelEdit()"
+                  [disabled]="saving()"
+                  class="w-full rounded-lg border border-white/10 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/5 transition disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  [disabled]="saving()"
+                  class="w-full rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400 transition disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                >
+                  {{ saving() ? 'Saving...' : 'Save changes' }}
+                </button>
+              </div>
+            }
+          </form>
+        </div>
+
+        <div class="rounded-2xl border border-red-400/20 bg-red-500/5 p-6 sm:p-8">
+          <h2 class="text-lg font-semibold text-red-200">Danger zone</h2>
+          <p class="mt-2 text-sm text-slate-400">
+            Permanently delete your account and all associated workout data.
+          </p>
+          <button
+            type="button"
+            (click)="openDeleteModal()"
+            [disabled]="deleting()"
+            class="mt-5 w-full rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-200 hover:bg-red-500/20 transition disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+          >
+            Delete account
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<app-confirm-delete-modal
+  [isOpen]="showDeleteModal()"
+  (confirmed)="onDeleteConfirmed()"
+  (cancelled)="closeDeleteModal()"
+/>
