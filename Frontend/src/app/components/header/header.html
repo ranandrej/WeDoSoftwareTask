@@ -1,35 +1,151 @@
-<header class="w-full bg-gray-900 border-b border-white/10">
-  <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-    <div class="flex items-center gap-6">
-      <h2 class="text-lg font-bold text-white">WeDoSoftware Task</h2>
+<header class="relative w-full border-b border-white/10 bg-gray-900">
+  <nav class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+    <a
+      routerLink="/"
+      class="shrink-0 text-xs font-bold tracking-tight text-white transition hover:text-slate-200 sm:text-sm md:text-lg"
+    >
+      TrainingTracker
+    </a>
+
+    <div class="hidden items-center gap-6 md:flex">
       <div class="flex items-center gap-4">
-        <a class="text-sm text-slate-300 hover:text-white transition" [routerLink]="['/']">Home</a>
+        <a class="nav-link" routerLink="/">Home</a>
         @if (authStore.isAuthenticated()) {
-          <a class="text-sm text-slate-300 hover:text-white transition" [routerLink]="['/workouts']">
-            Workouts
-          </a>
-          <a class="text-sm text-slate-300 hover:text-white transition" [routerLink]="['/profile']">
-            Profile
-          </a>
+          <a class="nav-link" routerLink="/workouts">My workouts</a>
+          <a class="nav-link" routerLink="/progress">Progress</a>
+          <a class="nav-link" routerLink="/profile">Profile</a>
         }
       </div>
     </div>
 
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-1 sm:gap-2">
       @if (authStore.user(); as user) {
-        <span class="hidden sm:inline text-sm text-slate-400">
-          {{ user.name }} {{ user.surename }}
-        </span>
-        <button
-          type="button"
-          (click)="logout()"
-          class="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-slate-200 hover:bg-white/5 transition"
-        >
-          Logout
-        </button>
+        <div class="relative">
+          <button
+            type="button"
+            (click)="toggleUserMenu($event)"
+            aria-label="User menu"
+            aria-haspopup="true"
+            [attr.aria-expanded]="userMenuOpen()"
+            class="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm text-slate-400 transition hover:bg-white/5 hover:text-white sm:gap-2"
+          >
+            <svg
+              class="h-5 w-5 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a8.25 8.25 0 1 1 16.5 0"
+              />
+            </svg>
+            <span class="hidden max-w-[8rem] truncate sm:inline md:max-w-none">{{
+              user.name
+            }}</span>
+            <svg
+              class="hidden h-4 w-4 shrink-0 text-slate-500 transition sm:block"
+              [class.rotate-180]="userMenuOpen()"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+            </svg>
+          </button>
+
+          @if (userMenuOpen()) {
+            <div
+              (click)="$event.stopPropagation()"
+              class="absolute right-0 top-full z-50 mt-2 min-w-[10rem] overflow-hidden rounded-xl border border-white/10 bg-slate-900 py-1 shadow-xl"
+            >
+              <a
+                routerLink="/profile"
+                (click)="closeUserMenu()"
+                class="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-slate-200 transition hover:bg-white/5 md:hidden"
+              >
+                <svg
+                  class="h-4 w-4 shrink-0 text-slate-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a8.25 8.25 0 1 1 16.5 0"
+                  />
+                </svg>
+                Profile
+              </a>
+              <button
+                type="button"
+                (click)="logout()"
+                class="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-slate-200 transition hover:bg-white/5"
+              >
+                <svg
+                  class="h-4 w-4 shrink-0 text-slate-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
+                  />
+                </svg>
+                Logout
+              </button>
+            </div>
+          }
+        </div>
       } @else {
-        <span class="text-sm text-slate-500">Not signed in</span>
+        <span class="hidden text-sm text-slate-500 sm:inline">Not signed in</span>
       }
+
+      <button
+        type="button"
+        (click)="toggleMobileMenu($event)"
+        aria-label="Toggle navigation menu"
+        [attr.aria-expanded]="mobileMenuOpen()"
+        class="inline-flex rounded-lg p-2 text-slate-300 transition hover:bg-white/5 hover:text-white md:hidden"
+      >
+        @if (mobileMenuOpen()) {
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+          </svg>
+        } @else {
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        }
+      </button>
     </div>
   </nav>
+
+  @if (mobileMenuOpen()) {
+    <div
+      (click)="$event.stopPropagation()"
+      class="border-t border-white/10 bg-gray-900 px-4 py-3 md:hidden"
+    >
+      <div class="flex flex-col gap-1">
+        <a routerLink="/" (click)="closeMobileMenu()" class="nav-link-mobile">Home</a>
+        @if (authStore.isAuthenticated()) {
+          <a routerLink="/workouts" (click)="closeMobileMenu()" class="nav-link-mobile">My workouts</a>
+          <a routerLink="/progress" (click)="closeMobileMenu()" class="nav-link-mobile">Progress</a>
+          <a routerLink="/profile" (click)="closeMobileMenu()" class="nav-link-mobile">Profile</a>
+        }
+      </div>
+    </div>
+  }
 </header>

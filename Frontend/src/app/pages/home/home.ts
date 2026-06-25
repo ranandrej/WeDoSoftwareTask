@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthStore } from '../../services/auth-store';
 
 @Component({
   selector: 'app-home',
@@ -8,4 +9,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home {}
+export class Home {
+  private readonly authStore = inject(AuthStore);
+  protected readonly user = this.authStore.user;
+}

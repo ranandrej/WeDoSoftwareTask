@@ -15,10 +15,12 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - app-network
 
   api:
     build:
-      context: .
+      context: ./Backend
       dockerfile: Dockerfile
     container_name: training-app-api
     depends_on:
@@ -29,9 +31,27 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=training-app;Username=postgres;Password=pass123"
-      Jwt__Issuer: TrainingApp
-      Jwt__Audience: TrainingAppUsers
+      Jwt__Issuer: API
+      Jwt__Audience: APIUsers
       Jwt__Key: DevelopmentSecretKey123456789_thiskeyissuperstrongthatitcantbebypassedforgood
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: training-app-frontend
+    depends_on:
+      - api
+    ports:
+      - "4200:4200"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   postgres_data:

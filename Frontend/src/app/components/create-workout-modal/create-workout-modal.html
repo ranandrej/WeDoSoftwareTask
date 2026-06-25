@@ -1,0 +1,189 @@
+@if (isOpen()) {
+  <div
+    class="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="create-workout-title"
+  >
+    <button
+      type="button"
+      class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
+      aria-label="Close dialog"
+      (click)="onClose()"
+    ></button>
+
+    <div
+      class="relative max-h-[92vh] w-full overflow-y-auto rounded-t-2xl border border-white/10 bg-slate-900 shadow-2xl sm:max-w-2xl sm:rounded-2xl"
+    >
+      <div class="sticky top-0 z-10 border-b border-white/10 bg-slate-900/95 px-6 py-5 backdrop-blur-md">
+        <h2 id="create-workout-title" class="text-xl font-bold text-white">
+          {{ isUpdateMode() ? 'Edit workout' : 'Add workout' }}
+        </h2>
+        <p class="mt-1 text-sm text-slate-400">
+          @if (isUpdateMode()) {
+            Update the details for this training session
+          } @else {
+            Fill in the details for your training session
+          }
+        </p>
+      </div>
+
+      <form (ngSubmit)="submit()" class="space-y-6 p-6">
+        <div>
+          <label for="workout-name" class="field-label">Name</label>
+          <input
+            id="workout-name"
+            [(ngModel)]="name"
+            name="name"
+            type="text"
+            placeholder="Morning run"
+            required
+            class="field-input"
+          />
+        </div>
+
+        <div class="field-panel space-y-5">
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="workout-type" class="field-label">Type</label>
+              <select id="workout-type" [(ngModel)]="type" name="type" required class="field-input">
+                @for (workoutType of types(); track workoutType) {
+                  <option [value]="workoutType">{{ workoutType }}</option>
+                }
+              </select>
+            </div>
+
+            <div>
+              <label for="workout-datetime" class="field-label">Date &amp; time</label>
+              <input
+                id="workout-datetime"
+                [(ngModel)]="workoutDateTime"
+                name="workoutDateTime"
+                type="datetime-local"
+                required
+                class="field-input"
+              />
+              <p class="field-hint">When did the workout take place?</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-panel space-y-5">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Session metrics</p>
+
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="duration" class="field-label">Duration (minutes)</label>
+              <input
+                id="duration"
+                [(ngModel)]="durationMinutes"
+                name="durationMinutes"
+                type="number"
+                min="1"
+                max="120"
+                required
+                class="field-input"
+              />
+              <p class="field-hint">Max 120 min (2 hours)</p>
+            </div>
+
+            <div>
+              <label for="calories" class="field-label">Calories burned</label>
+              <input
+                id="calories"
+                [(ngModel)]="caloriesBurned"
+                name="caloriesBurned"
+                type="number"
+                min="0"
+                max="2000"
+                required
+                class="field-input"
+              />
+              <p class="field-hint">Max 2000 kcal per session</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-panel space-y-5">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Intensity</p>
+
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <div class="flex items-center justify-between">
+                <label for="difficulty" class="field-label mb-0">Difficulty</label>
+                <span class="range-value">{{ difficulty }}</span>
+              </div>
+              <input
+                id="difficulty"
+                [(ngModel)]="difficulty"
+                name="difficulty"
+                type="range"
+                min="1"
+                max="10"
+                step="1"
+                class="range-input"
+              />
+              <p class="field-hint">1 = easy · 10 = very hard</p>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between">
+                <label for="fatigue" class="field-label mb-0">Fatigue</label>
+                <span class="range-value">{{ fatigue }}</span>
+              </div>
+              <input
+                id="fatigue"
+                [(ngModel)]="fatigue"
+                name="fatigue"
+                type="range"
+                min="1"
+                max="10"
+                step="1"
+                class="range-input"
+              />
+              <p class="field-hint">1 = fresh · 10 = exhausted</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label for="notes" class="field-label">
+            Notes <span class="font-normal text-slate-500">(optional)</span>
+          </label>
+          <textarea
+            id="notes"
+            [(ngModel)]="notes"
+            name="notes"
+            rows="3"
+            placeholder="How did it feel?"
+            class="w-full resize-none rounded-lg border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/40 transition"
+          ></textarea>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <div class="flex flex-col-reverse gap-3 border-t border-white/10 pt-5 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            (click)="onClose()"
+            [disabled]="loading()"
+            class="w-full rounded-xl border border-white/10 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            [disabled]="loading()"
+            class="w-full rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+          >
+            {{ loading() ? 'Saving...' : (isUpdateMode() ? 'Save changes' : 'Create workout') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

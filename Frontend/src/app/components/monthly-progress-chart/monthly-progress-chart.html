@@ -1,0 +1,38 @@
+<div class="rounded-xl border border-white/10 bg-slate-800/80 p-4 sm:p-5">
+  <div class="mb-4">
+    <h3 class="text-base font-semibold text-white">Weekly workouts</h3>
+    <p class="mt-1 text-sm text-slate-400">Weekly stats for the selected month</p>
+    <select
+      class="mt-3 rounded-lg border border-white/10 bg-slate-900/50 px-3 py-2 text-sm text-white"
+      [value]="selectedMetric()"
+      (change)="onMetricChange($any($event.target).value)"
+    >
+      <option value="workoutCount">Workouts</option>
+      <option value="difficulty">Difficulty</option>
+      <option value="durationMinutes">Duration</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <div class="flex h-64 items-center justify-center">
+      <p class="text-sm text-slate-400">Loading chart...</p>
+    </div>
+  } @else if (error()) {
+    <div class="flex h-64 items-center justify-center rounded-lg border border-red-400/30 bg-red-500/10 px-4 text-center text-sm text-red-200">
+      {{ error() }}
+    </div>
+  } @else if (!hasData()) {
+    <div class="flex h-64 items-center justify-center rounded-lg border border-dashed border-white/15 bg-white/5 px-4 text-center text-sm text-slate-400">
+      No workouts recorded for this month yet.
+    </div>
+  } @else {
+    <div class="h-64">
+      <canvas
+        baseChart
+        [type]="lineChartType"
+        [data]="lineChartData"
+        [options]="lineChartOptions"
+      ></canvas>
+    </div>
+  }
+</div>

@@ -24,11 +24,10 @@
       </div>
 
       <h2 id="delete-modal-title" class="text-center text-xl font-bold text-white">
-        Delete account?
+        {{ title() }}
       </h2>
       <p class="mt-3 text-center text-sm leading-relaxed text-slate-400">
-        Are you sure you want to delete your account? This action is permanent and all your
-        workouts will be removed.
+        {{ message() }}
       </p>
 
       <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -37,14 +36,14 @@
           (click)="onCancel()"
           class="w-full rounded-lg border border-white/10 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/5 transition sm:w-auto"
         >
-          No, keep account
+          {{ cancelLabel() }}
         </button>
         <button
           type="button"
           (click)="onConfirm()"
           class="w-full rounded-lg bg-red-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-500/25 hover:bg-red-400 transition sm:w-auto"
         >
-          Yes, delete account
+          {{ confirmLabel() }}
         </button>
       </div>
     </div>

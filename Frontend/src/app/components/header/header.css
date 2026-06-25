@@ -1,0 +1,23 @@
+.nav-link {
+  font-size: 0.875rem;
+  color: #cbd5e1;
+  transition: color 0.15s ease;
+}
+
+.nav-link:hover {
+  color: #fff;
+}
+
+.nav-link-mobile {
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.nav-link-mobile:hover {
+  background: rgb(255 255 255 / 0.05);
+  color: #fff;
+}

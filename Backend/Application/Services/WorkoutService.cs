@@ -19,7 +19,7 @@ namespace Application.Services
 
         public async Task<Result<string>> CreateWorkout(CreateWorkoutDTO dto, Guid userId)
         {
-            var validationError = _validator.Validate(dto.Difficulty, dto.Fatigue, dto.DurationMinutes);
+            var validationError = _validator.Validate(dto.Name, dto.Difficulty, dto.Fatigue, dto.DurationMinutes, dto.CaloriesBurned);
             if (validationError != null)
                 return Result<string>.Fail(validationError);
 
@@ -42,9 +42,15 @@ namespace Application.Services
             return Result<string>.Ok("Workout created successfuly");
         }
 
-        public async Task<Result<List<GetWorkoutDTO>>> GetWorkoutsForUser(Guid userId)
+        public async Task<Result<List<GetWorkoutDTO>>> GetWorkoutsForUser(Guid userId, int year, int month, bool descending)
         {
-            var workouts = await _workoutRepository.GetByUserID(userId);
+            if (month < 1 || month > 12)
+                return Result<List<GetWorkoutDTO>>.Fail("Month must be between 1 and 12");
+
+            if (year < 1)
+                return Result<List<GetWorkoutDTO>>.Fail("Invalid year");
+
+            var workouts = await _workoutRepository.GetByUserAsync(userId, year, month, descending);
             var dtos = workouts.Select(workout => new GetWorkoutDTO
             {
                 Id = workout.Id,
@@ -90,7 +96,7 @@ namespace Application.Services
             if (workout == null || workout.UserId != userId)
                 return Result<string>.Fail("Workout not found");
 
-            var validationError = _validator.Validate(dto.Difficulty, dto.Fatigue, dto.DurationMinutes);
+            var validationError = _validator.Validate(dto.Name, dto.Difficulty, dto.Fatigue, dto.DurationMinutes, dto.CaloriesBurned);
             if (validationError != null)
                 return Result<string>.Fail(validationError);
 
@@ -129,6 +135,10 @@ namespace Application.Services
                 return Result<MonthlyProgressDTO>.Fail("Invalid year");
 
             var workouts = await _workoutRepository.GetByUserIdAndMonthAsync(userId, year, month);
+            if (workouts == null || workouts.Count()==0)
+            {
+                return Result<MonthlyProgressDTO>.Fail("No workouts found");
+            }
             var daysInMonth = DateTime.DaysInMonth(year, month);
             var weekCount = (daysInMonth + 6) / 7;
 

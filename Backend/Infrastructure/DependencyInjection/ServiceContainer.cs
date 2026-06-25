@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using Infrastructure.Persistance;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
@@ -19,7 +19,7 @@ namespace Infrastructure.DependencyInjection
         this IServiceCollection services,
         IConfiguration config)
         {
-            services.AddDbContext<TrainingAppDBContext>(options =>
+            services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
 
             

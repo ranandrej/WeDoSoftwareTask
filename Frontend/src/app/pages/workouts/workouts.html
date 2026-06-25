@@ -1,1 +1,164 @@
-<p>workouts works!</p>
+<div class="min-h-[calc(100vh-56px)] bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 px-4 py-10 sm:py-12">
+  <div class="mx-auto w-full max-w-5xl">
+    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="mb-2 text-sm font-semibold uppercase tracking-widest text-indigo-300">Training</p>
+        <h1 class="text-3xl font-bold text-white">My workouts</h1>
+        <p class="mt-2 text-slate-400">Track and manage your training sessions</p>
+      </div>
+
+      <button
+        type="button"
+        (click)="openCreateModal()"
+        class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-400 sm:w-auto"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
+        </svg>
+        Add workout
+      </button>
+    </div>
+
+    @if (successMessage()) {
+      <div
+        class="mb-6 rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200"
+      >
+        {{ successMessage() }}
+      </div>
+    }
+
+    @if (actionError()) {
+      <div class="mb-6 rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        {{ actionError() }}
+      </div>
+    }
+
+    <div class="mb-6 flex flex-col gap-4 rounded-2xl border border-white/10 bg-slate-900/90 p-4 sm:flex-row sm:items-end sm:justify-between sm:p-5">
+      <div class="w-full sm:w-auto">
+        <label for="workouts-month" class="mb-1.5 block text-sm font-medium text-slate-200">
+          Filter by month
+        </label>
+        <input
+          id="workouts-month"
+          type="month"
+          [ngModel]="selectedMonth()"
+          (ngModelChange)="onMonthChange($event)"
+          class="w-full rounded-lg border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 transition sm:w-auto"
+        />
+        <p class="mt-1 text-xs text-slate-500">Showing workouts for {{ selectedMonthLabel() }}</p>
+      </div>
+
+      <button
+        type="button"
+        (click)="toggleSort()"
+        class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-white/5 sm:w-auto"
+      >
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h13M3 12h9m-9 5h5" />
+        </svg>
+        {{ sortLabel() }}
+      </button>
+    </div>
+
+    @if (pageLoading()) {
+      <div class="flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 py-20">
+        <p class="text-sm text-slate-300">Loading workouts...</p>
+      </div>
+    } @else if (loadError()) {
+      <div class="rounded-2xl border border-red-400/30 bg-red-500/10 px-6 py-8 text-center text-sm text-red-200">
+        {{ loadError() }}
+      </div>
+    } @else if (workouts().length === 0) {
+      <div class="rounded-2xl border border-dashed border-white/15 bg-white/5 px-6 py-16 text-center">
+        <p class="text-lg font-medium text-white">No workouts in {{ selectedMonthLabel() }}</p>
+        <p class="mt-2 text-sm text-slate-400">
+          Try another month or add a new training session.
+        </p>
+      </div>
+    } @else {
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        @for (workout of workouts(); track workout.id) {
+          <article class="rounded-2xl border border-white/10 bg-slate-900/90 p-5">
+            <div class="flex items-start justify-between gap-3">
+              <h2 class="text-lg font-semibold text-white">{{ workout.name }}</h2>
+              <span class="rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-200">
+                {{ workout.type }}
+              </span>
+            </div>
+            <p class="mt-2 text-sm text-slate-400">
+              {{ formatDate(workout.workoutDate) }}
+            </p>
+            <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <dt class="text-slate-500">Duration</dt>
+                <dd class="font-medium text-slate-200">{{ workout.durationMinutes }} min</dd>
+              </div>
+              <div>
+                <dt class="text-slate-500">Calories</dt>
+                <dd class="font-medium text-slate-200">{{ workout.caloriesBurned }}</dd>
+              </div>
+              <div>
+                <dt class="text-slate-500">Difficulty</dt>
+                <dd class="font-medium text-slate-200">{{ workout.difficulty }}/10</dd>
+              </div>
+              <div>
+                <dt class="text-slate-500">Fatigue</dt>
+                <dd class="font-medium text-slate-200">{{ workout.fatigue }}/10</dd>
+              </div>
+            </dl>
+            @if (workout.notes) {
+              <p class="mt-4 line-clamp-2 text-sm text-slate-400">{{ workout.notes }}</p>
+            }
+
+            <div class="mt-5 flex gap-2 border-t border-white/10 pt-4">
+              <button
+                type="button"
+                (click)="openUpdateModal(workout)"
+                class="flex-1 rounded-lg border border-white/10 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/5"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                (click)="openDeleteModal(workout)"
+                [disabled]="deleting()"
+                class="flex-1 rounded-lg border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm font-medium text-red-200 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Delete
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+
+  <button
+    type="button"
+    (click)="openCreateModal()"
+    aria-label="Add workout"
+    class="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-white shadow-xl shadow-emerald-500/30 transition hover:scale-105 hover:bg-emerald-400 sm:hidden"
+  >
+    <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
+    </svg>
+  </button>
+</div>
+
+<app-create-workout-modal
+  [isOpen]="showWorkoutModal()"
+  [mode]="workoutModalMode()"
+  [workout]="selectedWorkout()"
+  (saved)="onWorkoutSaved($event)"
+  (closed)="closeWorkoutModal()"
+/>
+
+<app-confirm-delete-modal
+  [isOpen]="showDeleteModal()"
+  title="Delete workout?"
+  [message]="deleteModalMessage()"
+  cancelLabel="No, keep workout"
+  confirmLabel="Yes, delete workout"
+  (confirmed)="onDeleteConfirmed()"
+  (cancelled)="closeDeleteModal()"
+/>

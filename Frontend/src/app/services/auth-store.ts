@@ -17,6 +17,7 @@ export class AuthStore {
   setUser(user: User): void {
     this.currentUser.set(user);
     localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+    console.log("User set to:", user);
   }
 
   logout(): void {
