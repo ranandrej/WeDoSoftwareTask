@@ -51,7 +51,7 @@ public class WorkoutServiceTests
         result.Data.Weeks.Should().NotBeEmpty();
     }
     [Fact]
-    public async Task GetMonthlyProgress_ShouldReturnFail_WhenNoWorkoutsExist()
+    public async Task GetMonthlyProgress_ShouldReturnEmptyWeeks_WhenNoWorkoutsExist()
     {
         // Arrange
         var userId = Guid.NewGuid();
@@ -66,7 +66,11 @@ public class WorkoutServiceTests
         var result = await _service.GetMonthlyProgress(userId, year, month);
 
         // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Should().NotBeNullOrEmpty();
+        result.Success.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.Year.Should().Be(year);
+        result.Data.Month.Should().Be(month);
+        result.Data.Weeks.Should().NotBeEmpty();
+        result.Data.Weeks.Should().OnlyContain(week => week.WorkoutCount == 0);
     }
 }

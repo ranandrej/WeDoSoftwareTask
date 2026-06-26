@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -34,7 +35,12 @@ export class Login {
           this.successMessage.set('Login successful!');
           this.router.navigate(['/workouts']);
         },
-        error: () => {
+        error: (err: HttpErrorResponse) => {
+          if (err.status === 503) {
+            this.errorMessage.set('Too many requests. Please try again later.');
+            return;
+          }
+
           this.errorMessage.set('Invalid credentials. Please try again.');
         },
       });

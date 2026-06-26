@@ -135,10 +135,7 @@ namespace Application.Services
                 return Result<MonthlyProgressDTO>.Fail("Invalid year");
 
             var workouts = await _workoutRepository.GetByUserIdAndMonthAsync(userId, year, month);
-            if (workouts == null || workouts.Count()==0)
-            {
-                return Result<MonthlyProgressDTO>.Fail("No workouts found");
-            }
+            var workoutList = workouts?.ToList() ?? new List<Workout>();
             var daysInMonth = DateTime.DaysInMonth(year, month);
             var weekCount = (daysInMonth + 6) / 7;
 
@@ -146,7 +143,7 @@ namespace Application.Services
 
             for (var weekNumber = 1; weekNumber <= weekCount; weekNumber++)
             {
-                var weekWorkouts = workouts
+                var weekWorkouts = workoutList
                     .Where(w => DateUtils.GetWeekOfMonth(w.WorkoutDate) == weekNumber)
                     .ToList();
 

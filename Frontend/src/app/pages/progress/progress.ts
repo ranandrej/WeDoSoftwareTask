@@ -27,6 +27,21 @@ export class Progress {
     const [, month] = this.selectedMonth().split('-').map(Number);
     return month;
   });
+  selectedMonthTotalWorkouts = computed(() => {
+    const progress = this.monthlyProgress();
+    if (!progress) {
+      return 0;
+    }
+    return progress.weeks.reduce((acc, week) => acc + week.workoutCount, 0);
+  });
+  hasWorkouts = computed(() => {
+    const progress = this.monthlyProgress();
+    if (!progress) {
+      return false;
+    }
+
+    return progress.weeks.some((week) => week.workoutCount > 0);
+  });
 
   selectedMonthLabel = computed(() => {
     const progress = this.monthlyProgress();

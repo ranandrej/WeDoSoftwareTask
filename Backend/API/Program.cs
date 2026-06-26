@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using QuestPDF.Infrastructure;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 QuestPDF.Settings.License = LicenseType.Community;
@@ -18,6 +19,23 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
+});
+builder.Services.AddRateLimiter(options =>
+{
+    
+options.AddPolicy("auth-policy", context =>
+{
+    var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+    return RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: ip,
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 5,
+            Window = TimeSpan.FromMinutes(3),
+            QueueLimit = 0
+        });
+});
 });
 // Add services to the container.
 builder.Services.InfrastructureServices(builder.Configuration);
@@ -84,7 +102,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 app.UseCors("AllowAngular");
-
+app.UseRateLimiter();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

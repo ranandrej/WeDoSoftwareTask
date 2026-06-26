@@ -1,4 +1,5 @@
 import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
@@ -10,7 +11,7 @@ import { MonthlyProgress } from '../../models/workout.type';
 @Component({
   selector: 'app-monthly-progress-chart',
   standalone: true,
-  imports: [BaseChartDirective],
+  imports: [BaseChartDirective, RouterLink],
   templateUrl: './monthly-progress-chart.html',
 })
 export class MonthlyProgressChart {

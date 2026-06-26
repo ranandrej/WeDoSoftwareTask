@@ -87,7 +87,7 @@
               </a>
               <button
                 type="button"
-                (click)="logout()"
+                (click)="openLogoutModal($event)"
                 class="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-slate-200 transition hover:bg-white/5"
               >
                 <svg
@@ -149,3 +149,13 @@
     </div>
   }
 </header>
+
+<app-confirm-delete-modal
+  [isOpen]="logoutModalOpen()"
+  title="Logout?"
+  message="Are you sure you want to logout?"
+  cancelLabel="No, stay signed in"
+  confirmLabel="Yes, logout"
+  (confirmed)="confirmLogout()"
+  (cancelled)="closeLogoutModal()"
+/>

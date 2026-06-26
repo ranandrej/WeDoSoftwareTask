@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -43,9 +44,14 @@ export class Register {
           this.successMessage.set('Registration successful!');
           this.router.navigate(['/workouts']);
         },
-        error: (err) => {
-          this.errorMessage.set(err?.error || 'Registration failed. Please try again.');
-          console.error('Registration error:', err);
+        error: (err: HttpErrorResponse) => {
+          if (err.status === 503) {
+            this.errorMessage.set('Too many requests. Please try again later.');
+            return;
+          }
+
+          const message = typeof err.error === 'string' ? err.error : err.error?.error;
+          this.errorMessage.set(message || 'Registration failed. Please try again.');
         },
       });
   }

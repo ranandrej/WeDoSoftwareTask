@@ -1,11 +1,12 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { ConfirmDeleteModal } from '../confirm-delete-modal/confirm-delete-modal';
 import { AuthService } from '../../services/auth';
 import { AuthStore } from '../../services/auth-store';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink],
+  imports: [RouterLink, ConfirmDeleteModal],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
@@ -16,6 +17,7 @@ export class Header {
 
   userMenuOpen = signal(false);
   mobileMenuOpen = signal(false);
+  logoutModalOpen = signal(false);
 
   toggleUserMenu(event: Event): void {
     event.stopPropagation();
@@ -43,10 +45,20 @@ export class Header {
     this.closeMobileMenu();
   }
 
-  logout(): void {
+  openLogoutModal(event: Event): void {
+    event.stopPropagation();
     this.closeUserMenu();
     this.closeMobileMenu();
+    this.logoutModalOpen.set(true);
+  }
+
+  confirmLogout(): void {
+    this.logoutModalOpen.set(false);
     this.authService.logout();
     this.router.navigate(['/']);
+  }
+
+  closeLogoutModal(): void {
+    this.logoutModalOpen.set(false);
   }
 }
